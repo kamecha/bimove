@@ -40,8 +40,10 @@ endfunction
 function! bimove#highlight(high, mid, low) abort
 	" 上半分
 	eval w:bimove_matchids->add(matchadd('BimoveHigh', '\(\%' . w:high . 'l\|\%>' . w:high . 'l\)' . '\%<' . w:mid . 'l'))
+	" カーソル行
+	eval w:bimove_matchids->add(matchadd('BimoveCursor', '\%' . w:mid . 'l'))
 	" 下半分
-	eval w:bimove_matchids->add(matchadd('BimoveLow', '\(\%' . w:mid . 'l' . '\|' . '\%>' . w:mid . 'l\)' . '\(\%<' . w:low . 'l' . '\|' . '\%' . w:low . 'l\)'))
+	eval w:bimove_matchids->add(matchadd('BimoveLow', '\%>' . w:mid . 'l' . '\(\%<' . w:low . 'l' . '\|' . '\%' . w:low . 'l\)'))
 endfunction
 
 function! bimove#deleteHighlight() abort
