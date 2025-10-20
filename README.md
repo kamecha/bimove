@@ -10,8 +10,8 @@ Moves the cursor using a binary search approach.
 ```vim
 nnoremap M <Plug>(bimove-enter)<Plug>(bimove)
 
-nnoremap <Plug>(bimove)H <Plug>(bimove-high)
-nnoremap <Plug>(bimove)L <Plug>(bimove-low)
+nnoremap <Plug>(bimove)H <Plug>(bimove-high)<Plug>(bimove)
+nnoremap <Plug>(bimove)L <Plug>(bimove-low)<Plug>(bimove)
 
 highlight link BimoveHigh Search
 highlight link BimoveCursor Visual
