@@ -9,11 +9,11 @@ function! bimove#mid(high, low) abort
 		let w:bimove_matchids = []
 	endif
 
-	call bimove#deleteHighlight()
+	call bimove#deleteHighlight(w:bimove_matchids)
 
 	call cursor(w:mid, 1)
 
-	call bimove#highlight(w:high, w:mid, w:low)
+	let w:bimove_matchids = bimove#highlight(w:high, w:mid, w:low)
 endfunction
 
 " w:high < w:mid <= w:low が常に成り立つようにする
@@ -28,36 +28,35 @@ function! bimove#move(isLower) abort
 		let w:low = w:mid
 	endif
 
-	call bimove#deleteHighlight()
+	call bimove#deleteHighlight(w:bimove_matchids)
 
 	" 新しい mid を計算して移動
 	let w:mid = (w:low + w:high + 1) / 2
 	call cursor(w:mid, 1)
 
-	call bimove#highlight(w:high, w:mid, w:low)
+	let w:bimove_matchids = bimove#highlight(w:high, w:mid, w:low)
 endfunction
 
 function! bimove#highlight(high, mid, low) abort
+	let matchids = []
 	" 上半分
-	eval w:bimove_matchids->add(matchadd('BimoveHigh', '\(\%' . w:high . 'l\|\%>' . w:high . 'l\)' . '\%<' . w:mid . 'l'))
+	eval matchids->add(matchadd('BimoveHigh', '\(\%' . a:high . 'l\|\%>' . a:high . 'l\)' . '\%<' . a:mid . 'l'))
 	" カーソル行
-	eval w:bimove_matchids->add(matchadd('BimoveCursor', '\%' . w:mid . 'l'))
+	eval matchids->add(matchadd('BimoveCursor', '\%' . a:mid . 'l'))
 	" 下半分
-	eval w:bimove_matchids->add(matchadd('BimoveLow', '\%>' . w:mid . 'l' . '\(\%<' . w:low . 'l' . '\|' . '\%' . w:low . 'l\)'))
+	eval matchids->add(matchadd('BimoveLow', '\%>' . a:mid . 'l' . '\(\%<' . a:low . 'l' . '\|' . '\%' . a:low . 'l\)'))
+	return matchids
 endfunction
 
-function! bimove#deleteHighlight() abort
+function! bimove#deleteHighlight(matchids) abort
 	" 途中でウィンドウ移動があると自動でマッチが消されるので、既に消されてたらそのままにする
-	if exists('w:bimove_matchids')
-		for id in w:bimove_matchids
-			call matchdelete(id)
-		endfor
-	endif
-	let w:bimove_matchids = []
+	for id in a:matchids
+		call matchdelete(id)
+	endfor
 endfunction
 
 function! bimove#cleanup() abort
-	call bimove#deleteHighlight()
+	call bimove#deleteHighlight(w:bimove_matchids)
 	unlet w:bimove_matchids
 	if exists('w:high')
 		unlet w:high
