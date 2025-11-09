@@ -1,5 +1,6 @@
 
 function! bimove#mid(high, low) abort
+	let w:prev_curpos = getcurpos()
 	" ウィンドウローカル変数を初期化（存在しなくても line() で代用）
 	let w:high = a:high
 	let w:low  = a:low
@@ -11,7 +12,8 @@ function! bimove#mid(high, low) abort
 
 	call bimove#deleteHighlight(w:bimove_matchids)
 
-	call cursor(w:mid, 1)
+	let curswant = w:prev_curpos[4]
+	call cursor(w:mid, curswant)
 
 	let w:bimove_matchids = bimove#highlight(w:high, w:mid, w:low)
 endfunction
@@ -32,7 +34,9 @@ function! bimove#move(isLower) abort
 
 	" 新しい mid を計算して移動
 	let w:mid = (w:low + w:high + 1) / 2
-	call cursor(w:mid, 1)
+	" TODO: startofline に応じた箇所に移動したい
+	let curswant = w:prev_curpos[4]
+	call cursor(w:mid, curswant)
 
 	let w:bimove_matchids = bimove#highlight(w:high, w:mid, w:low)
 endfunction
